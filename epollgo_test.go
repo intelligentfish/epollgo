@@ -87,6 +87,9 @@ func main() {
 				}
 				if buf.IsReadable() {
 					ctx.Write(buf)
+				} else {
+					// 退还资源
+					byte_buf.GetPoolInstance().Return(buf)
 				}
 			}))
 			return ctx
