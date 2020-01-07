@@ -54,7 +54,25 @@ type EventLoop struct {
 	slaveLoops     []*EventLoop // 从事件循环
 	slaveLoopsLock sync.RWMutex // 从事件循环锁
 
-	// 监视事件组，这个有点坑，和C Epoll差异有点大，此处采用的策略是分配一个很大的数组，而不是append
+	// 监视事件组，这个有点坑，和C、Epoll差异有点大，此处采用的策略是分配一个很大的数组，而不是append，否则效率极低
+	// C的定义
+	// typedef union epoll_data {
+	//    void    *ptr;
+	//    int      fd;
+	//    uint32_t u32;
+	//    uint64_t u64;
+	// } epoll_data_t;
+	//
+	// struct epoll_event {
+	//    uint32_t     events;    /* Epoll events */
+	//    epoll_data_t data;      /* User data variable */
+	//};
+	// GO的定义
+	// type EpollEvent struct {
+	//     Events uint32
+	//     Fd     int32
+	//     Pad    int32
+	// }
 	epEvents     []unix.EpollEvent // Epoll事件组
 	epEventsLock sync.RWMutex      // Epoll事件组锁
 
